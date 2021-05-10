@@ -1,9 +1,20 @@
+class Node{
+    Node * prevNode;
+    int moveIndex;
+    int numPiecesMoved;
+    int ending;
+    int piecesCaptured;
+}
+
 class GameBoard{
     private:
     int* gameBoard;
     int numPockets;
+    int boardSize;
+    int player2Bank;
     bool turnTracker;
     bool gameOngoing;
+    Node * topNode;
 
     public:
     /*numPockets: number of pockets on each side (if >6, will be set to 6)

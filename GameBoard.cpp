@@ -2,14 +2,16 @@
 
 GameBoard::GameBoard(int numPockets, int numPieces, bool turnStart)
 {
+    GameBoard::boardSize = numPockets*2 + 2;
+    GameBoard::player2Bank = numPockets+1;
     GameBoard::gameBoard = new int[numPockets*2 + 2];
     GameBoard::numPockets = numPockets;
     GameBoard::turnTracker = turnStart;
     GameBoard::gameOngoing = true;
     //initializes the number of pieces in each pocket besides the ends to be numPieces
-    for(int i=1;i<numPockets*2+2;i++)
+    for(int i=1;i<GameBoard::boardSize;i++)
     {
-        if(i == numPockets+1)
+        if(i == player2Bank)
         {
             i++;
         }
@@ -40,12 +42,12 @@ bool GameBoard::gameOver()
 
 int GameBoard::getCurrentScore()
 {
-    return GameBoard::gameBoard[0] - GameBoard::gameBoard[numPockets + 1];
+    return GameBoard::gameBoard[0] - GameBoard::gameBoard[player2Bank];
 }
 
 bool GameBoard::spotPlayable(int pocket)
 {
-    if((GameBoard::turnTracker && pocket > 0 && pocket <= GameBoard::numPockets) || (!(GameBoard::turnTracker) && pocket > (GameBoard::numPockets+1) && pocket <= (GameBoard::numPockets*2+1)))
+    if((GameBoard::turnTracker && pocket > 0 && pocket < GameBoard::player2Bank) || (!(GameBoard::turnTracker) && pocket > (GameBoard::player2Bank) && pocket < (GameBoard::boardSize)))
     {
         return true;
     }
@@ -59,26 +61,28 @@ bool GameBoard::handleEndgame()
 {
     int side1;
     int side2;
-    for(int i = 1; i<=GameBoard::numPockets; i++)
+    //checks if sides are empty
+    for(int i = 1; i<GameBoard::player2Bank; i++)
     {
         side1 += GameBoard::gameBoard[i];
     }
-    for(int i = GameBoard::numPockets+2; i<=2*GameBoard::numPockets+1; i++)
+    for(int i = (GameBoard::player2Bank + 1); i<GameBoard::boardSize; i++)
     {
         side2 += GameBoard::gameBoard[i];
     }
+    //if a side is empty, adds all contents on other side to other's bank side, sets game to over
     if(side1 == 0)
     {
-        for(int i = GameBoard::numPockets+2; i<=2*GameBoard::numPockets+1; i++)
+        for(int i = (GameBoard::player2Bank + 1); i<GameBoard::boardSize; i++)
         {
             GameBoard::gameBoard[i]=0;
         }
-        GameBoard::gameBoard[GameBoard::numPockets + 1] += side2;
+        GameBoard::gameBoard[GameBoard::player2Bank] += side2;
         GameBoard::gameOngoing = false;
     }
     else if(side2 == 0)
     {
-        for(int i = 1; i<=GameBoard::numPockets+1; i++)
+        for(int i = 1; i<GameBoard::player2Bank; i++)
         {
             GameBoard::gameBoard[i]=0;
         }
@@ -96,36 +100,40 @@ void GameBoard::makeMove(int pocket)
     else
     {
         int pieces = GameBoard::gameBoard[pocket];
-        int ending = (pocket-pieces)%(2*GameBoard::numPockets+2);
+        GameBoard::gameBoard[pocket] = 0;
+        int ending = (pocket-pieces)%(GameBoard::boardSize);
+        //Adding pieces in the circle
         for(int i=i;i<=pieces;i++)
         {
-            if(((pocket-i)%(2*GameBoard::numPockets+2) == 0 && !GameBoard::turnTracker) || ((pocket-i)%(2*GameBoard::numPockets+2) == (GameBoard::numPockets + 1) && GameBoard::turnTracker))
+            int changedIndex = (pocket-i)%(GameBoard::boardSize);
+            if((changedIndex == 0 && !GameBoard::turnTracker) || (changedIndex == (GameBoard::player2Bank) && GameBoard::turnTracker))
             {
-                ending = (ending-1)%(2*GameBoard::numPockets+2);
+                ending = (ending-1)%(GameBoard::boardSize);
                 GameBoard::gameBoard[ending]++;
             }
             else
             {
-                GameBoard::gameBoard[(pocket-i)%(2*GameBoard::numPockets+2)]++;
+                GameBoard::gameBoard[changedIndex]++;
             }
-            //still needing to be implemented: capturing, not placing anything in opponent's score pocket
         }
-        if(GameBoard::gameBoard[ending] == 1 && GameBoard::gameBoard[2*GameBoard::numPockets + 2-ending] != 0)
+        //Implements capturing
+        if(GameBoard::gameBoard[ending] == 1 && GameBoard::gameBoard[GameBoard::boardSize-ending] != 0)
         {
-            int captured = GameBoard::gameBoard[2*GameBoard::numPockets + 2-ending];
-            GameBoard::gameBoard[2*GameBoard::numPockets + 2-ending] = 0;
+            int captured = GameBoard::gameBoard[GameBoard::boardSize-ending];
+            GameBoard::gameBoard[GameBoard::boardSize-ending] = 0;
+            GameBoard::gameBoard[ending] = 0;
             if(GameBoard::turnTracker)
             {
-                GameBoard::gameBoard[0] += captured;
+                GameBoard::gameBoard[0] += captured + 1;
             }
             else
             {
-                GameBoard::gameBoard[2*GameBoard::numPockets + 1] += captured;
+                GameBoard::gameBoard[GameBoard::player2Bank] += captured + 1;
             }
         }
         GameBoard::handleEndgame();
         //swaps whose turn it is as long as it does not end in a scoring pocket
-        if(ending != 0 && ending != GameBoard::numPockets + 1)
+        if(ending != 0 && ending != GameBoard::player2Bank)
         {
             GameBoard::turnTracker = !(GameBoard::turnTracker);
         }
