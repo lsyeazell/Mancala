@@ -32,7 +32,7 @@ class GameBoard{
     //returns the difference of scores (player-computer)
     int getCurrentScore();
 
-    //checks if the spot at that index is playable
+    //checks if the spot at that index is playable by the current player
     bool spotPlayable(int pocket);
 
     //makes a move starting in the index provided
