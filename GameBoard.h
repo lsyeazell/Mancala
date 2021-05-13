@@ -2,13 +2,14 @@ class Node{
     Node * prevNode;
     int moveIndex;
     int numPiecesMoved;
-    int ending;
+    int endingIndex;
     int piecesCaptured;
 }
 
 class GameBoard{
     private:
     int* gameBoard;
+    int* holderGameBoard;
     int numPockets;
     int boardSize;
     int player2Bank;
@@ -48,4 +49,7 @@ class GameBoard{
 
     //makes a move starting in the index provided
     void makeMove(int pocket);
+
+    //undoes the most recent move
+    void undoMove();
 };

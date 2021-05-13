@@ -59,6 +59,11 @@ bool GameBoard::spotPlayable(int pocket)
 
 bool GameBoard::handleEndgame()
 {
+    GameBoard::holderGameBoard = = new int[numPockets*2 + 2];
+    for(int i = 0; i < GameBoard::boardSize; i++)
+    {
+        holderGameBoard[i] = gameBoard[i];
+    }
     int side1;
     int side2;
     //checks if sides are empty
@@ -89,6 +94,7 @@ bool GameBoard::handleEndgame()
         GameBoard::gameBoard[0] += side1;
         GameBoard::gameOngoing = false;
     }
+    return GameBoard::gameOngoing;
 }
 
 void GameBoard::makeMove(int pocket)
@@ -99,11 +105,14 @@ void GameBoard::makeMove(int pocket)
     }
     else
     {
+        Node * currentMove = new Node();
+        currentMove->prevNode = topNode;
+        currentMove->moveIndex = pocket;
         int pieces = GameBoard::gameBoard[pocket];
         GameBoard::gameBoard[pocket] = 0;
         int ending = (pocket-pieces)%(GameBoard::boardSize);
         //Adding pieces in the circle
-        for(int i=i;i<=pieces;i++)
+        for(int i=1;i<=pieces;i++)
         {
             int changedIndex = (pocket-i)%(GameBoard::boardSize);
             if((changedIndex == 0 && !GameBoard::turnTracker) || (changedIndex == (GameBoard::player2Bank) && GameBoard::turnTracker))
@@ -116,10 +125,13 @@ void GameBoard::makeMove(int pocket)
                 GameBoard::gameBoard[changedIndex]++;
             }
         }
+        currentMove->endingIndex = ending;
+        currentMove->piecesCaptured = 0;
         //Implements capturing
-        if(GameBoard::gameBoard[ending] == 1 && GameBoard::gameBoard[GameBoard::boardSize-ending] != 0)
+        if(GameBoard::gameBoard[ending] == 1 && GameBoard::gameBoard[GameBoard::boardSize-ending] != 0 && GameBoard::spotPlayable(ending))
         {
             int captured = GameBoard::gameBoard[GameBoard::boardSize-ending];
+            currentMove->piecesCaptured = captured;
             GameBoard::gameBoard[GameBoard::boardSize-ending] = 0;
             GameBoard::gameBoard[ending] = 0;
             if(GameBoard::turnTracker)
@@ -131,6 +143,7 @@ void GameBoard::makeMove(int pocket)
                 GameBoard::gameBoard[GameBoard::player2Bank] += captured + 1;
             }
         }
+        topNode = currentMove;
         GameBoard::handleEndgame();
         //swaps whose turn it is as long as it does not end in a scoring pocket
         if(ending != 0 && ending != GameBoard::player2Bank)
@@ -138,4 +151,47 @@ void GameBoard::makeMove(int pocket)
             GameBoard::turnTracker = !(GameBoard::turnTracker);
         }
     }
+}
+
+void GameBoard::undoMove()
+{
+    if(topNode->endingIndex != 0 && topNode->endingIndex != GameBoard::player2Bank)
+    {
+        GameBoard::turnTracker = !(GameBoard::turnTracker);
+    }
+    if(!GameBoard::gameOngoing)
+    {
+        GameBoard::gameBoard = GameBoard::holderGameBoard;
+    }
+    if(topNode->piecesCaptured > 0)
+    {
+        if(GameBoard::turnTracker)
+        {
+            GameBoard::gameBoard[0] -= (topNode->piecesCaptured + 1);
+        }
+       else
+        {
+            GameBoard::gameBoard[GameBoard::player2Bank] -= (topNode->piecesCaptured + 1);
+        }
+        GameBoard::gameBoard[topNode->endingIndex]++;
+        GameBoard::gameBoard[GameBoard::boardSize - topNode->endingIndex] += topNode->piecesCaptured;
+    }
+    int ending = (topNode->moveIndex - topNode->numPiecesMoved)%(GameBoard::boardSize);
+    for(int i = 1; i<=topNode->numPiecesMoved;i++)
+    {
+        int changedIndex = (topNode->moveIndex-i)%(GameBoard::boardSize);
+        if((changedIndex == 0 && !GameBoard::turnTracker) || (changedIndex == (GameBoard::player2Bank) && GameBoard::turnTracker))
+        {
+            ending = (ending-1)%(GameBoard::boardSize);
+            GameBoard::gameBoard[ending]--;
+        }
+        else
+        {
+            GameBoard::gameBoard[changedIndex]--;
+        }
+    }
+    GameBoard::gameBoard[topNode->moveIndex] += topNode -> numPiecesMoved;
+    Node * copy = topNode;
+    topNode = topNode->prevNode;
+    delete copy;
 }
