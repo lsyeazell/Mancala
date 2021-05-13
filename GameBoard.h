@@ -30,6 +30,9 @@ class GameBoard{
     //returns the number of pockets on each side
     int getNumPockets();
 
+    //returns the top node in the move stack
+    Node * getTopNode();
+
     //returns true if the player has the current turn, false if the computer goes
     bool getCurrentTurn();
 
@@ -52,4 +55,10 @@ class GameBoard{
 
     //undoes the most recent move
     void undoMove();
+
+    //prints the moves that have been made this game
+    void printMoves(Node * currentNode);
+
+    //prints the current game board
+    void printCurrentBoard();
 };

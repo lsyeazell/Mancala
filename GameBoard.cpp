@@ -35,6 +35,11 @@ bool GameBoard::getCurrentTurn()
     return GameBoard::turnTracker;
 }
 
+Node * GameBoard::getTopNode()
+{
+    return GameBoard::topNode;
+}
+
 bool GameBoard::gameOver()
 {
     return GameBoard::gameOngoing;
@@ -194,4 +199,40 @@ void GameBoard::undoMove()
     Node * copy = topNode;
     topNode = topNode->prevNode;
     delete copy;
+}
+
+void GameBoard::printMoves(Node * currentNode)
+{
+    if(currentNode->prevNode != nullptr)
+    {
+        GameBoard::printMoves(currentNode->prevNode);
+    }
+    int playerNumber;
+    if(currentNode->moveIndex < GameBoard::player2Bank)
+    {
+        playerNumber = 1;
+    }
+    else
+    {
+        playerNumber = 2;
+    }
+    std::cout << "Player: " << playerNumber << " Space: " << currentNode->moveIndex << '\n';
+}
+
+void GameBoard::printCurrentBoard()
+{
+    for(int i = GameBoard::player2Bank + 1; i<GameBoard::boardSize; i++)
+    {
+        std::cout << GameBoard[i] << '\t';
+    }
+    std::cout << '\n' << GameBoard[player2Bank];
+    for(int i = GameBoard::player2Bank + 1; i<GameBoard::boardSize; i++)
+    {
+        std::cout << " \t";
+    }
+    std::cout << '\n';
+    for(int i = 0; i<GameBoard::player2Bank;i++)
+    {
+        std::cout << GameBoard[i] << '\t';
+    }
 }
