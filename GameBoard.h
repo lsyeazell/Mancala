@@ -4,7 +4,9 @@ class Node{
     int numPiecesMoved;
     int endingIndex;
     int piecesCaptured;
-}
+
+    friend class GameBoard;
+};
 
 class GameBoard{
     private:

@@ -1,3 +1,4 @@
+#include <iostream>
 #include "GameBoard.h"
 
 GameBoard::GameBoard(int numPockets, int numPieces, bool turnStart)
@@ -64,7 +65,7 @@ bool GameBoard::spotPlayable(int pocket)
 
 bool GameBoard::handleEndgame()
 {
-    GameBoard::holderGameBoard = = new int[numPockets*2 + 2];
+    GameBoard::holderGameBoard = new int[numPockets*2 + 2];
     for(int i = 0; i < GameBoard::boardSize; i++)
     {
         holderGameBoard[i] = gameBoard[i];
@@ -223,9 +224,9 @@ void GameBoard::printCurrentBoard()
 {
     for(int i = GameBoard::player2Bank + 1; i<GameBoard::boardSize; i++)
     {
-        std::cout << GameBoard[i] << '\t';
+        std::cout << GameBoard::gameBoard[i] << '\t';
     }
-    std::cout << '\n' << GameBoard[player2Bank];
+    std::cout << '\n' << GameBoard::gameBoard[player2Bank];
     for(int i = GameBoard::player2Bank + 1; i<GameBoard::boardSize; i++)
     {
         std::cout << " \t";
@@ -233,6 +234,6 @@ void GameBoard::printCurrentBoard()
     std::cout << '\n';
     for(int i = 0; i<GameBoard::player2Bank;i++)
     {
-        std::cout << GameBoard[i] << '\t';
+        std::cout << GameBoard::gameBoard[i] << '\t';
     }
 }
