@@ -26,7 +26,7 @@ int MovePicker::miniMax(int alpha, int beta){
         MaxHeap * possibleMoves = new MaxHeap();
 
         //loop through possible moves
-        for(int i=0;i<myGame->getNumPockets();i++){
+        for(int i=1;i<myGame->getNumPockets()+1;i++){
             if(myGame->spotPlayable(i)){
 
                 //makes moves and backtracks to find optimum move
@@ -53,7 +53,7 @@ int MovePicker::miniMax(int alpha, int beta){
         MinHeap * possibleMoves = new MinHeap();
 
         //loop through possible moves
-        for(int i=0;i<myGame->getNumPockets();i++){
+        for(int i=myGame->getNumPockets()+2;i<2*myGame->getNumPockets()+2;i++){
             if(myGame->spotPlayable(i)){
 
                 //makes moves and backtracks to find optimum move
@@ -82,7 +82,7 @@ int MovePicker::chooseMove(){
     likelyOutcome = numeric_limits<int>::max();
 
     //tests each move using miniMax
-    for(int i=0; i<myGame->getNumPockets(); i++){
+    for(int i=myGame->getNumPockets()+2;i<2*myGame->getNumPockets()+2;i++){
         if(myGame->spotPlayable(i)){
             int alpha = numeric_limits<int>::min();
             int beta = numeric_limits<int>::max();
