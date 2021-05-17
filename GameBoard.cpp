@@ -227,12 +227,12 @@ void GameBoard::printCurrentBoard()
         std::cout << GameBoard::gameBoard[i] << '\t';
     }
     std::cout << '\n' << GameBoard::gameBoard[player2Bank];
-    for(int i = GameBoard::player2Bank + 1; i<GameBoard::boardSize; i++)
+    for(int i = GameBoard::player2Bank + 2; i<GameBoard::boardSize; i++)
     {
         std::cout << " \t";
     }
-    std::cout << '\n';
-    for(int i = 0; i<GameBoard::player2Bank;i++)
+    std::cout << GameBoard::gameBoard[0] << '\n';
+    for(int i = GameBoard::player2Bank-1; i>= 1;i--)
     {
         std::cout << GameBoard::gameBoard[i] << '\t';
     }
