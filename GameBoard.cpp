@@ -31,6 +31,12 @@ int GameBoard::getNumPockets()
     return GameBoard::numPockets;
 }
 
+int GameBoard::getPiecesInPocket(int index)
+{
+    return GameBoard::gameBoard[index];
+}
+
+
 bool GameBoard::getCurrentTurn()
 {
     return GameBoard::turnTracker;

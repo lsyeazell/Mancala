@@ -32,6 +32,9 @@ class GameBoard{
     //returns the number of pockets on each side
     int getNumPockets();
 
+    //returns the number of pieces currently in the pocket at index index
+    int getPiecesInPocket(int index);
+
     //returns the top node in the move stack
     Node * getTopNode();
 
