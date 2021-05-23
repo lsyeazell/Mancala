@@ -111,11 +111,11 @@ bool GameBoard::handleEndgame()
 
 void GameBoard::makeMove(int pocket)
 {
-    if(!(GameBoard::spotPlayable(pocket)))
+    /*if(!(GameBoard::spotPlayable(pocket)))
     {
         throw "Move Invalid";
     }
-    else
+    else*/
     {
         Node * currentMove = new Node();
         currentMove->prevNode = topNode;
@@ -134,6 +134,9 @@ void GameBoard::makeMove(int pocket)
             }
             else
             {
+                if(pocket-i<0){
+                  changedIndex=2*numPockets+2+pocket-i;
+                }
                 GameBoard::gameBoard[changedIndex]++;
             }
         }
