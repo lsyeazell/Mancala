@@ -118,10 +118,11 @@ void GameBoard::makeMove(int pocket)
     else*/
     {
         Node * currentMove = new Node();
-        currentMove->prevNode = topNode;
+        currentMove->prevNode = GameBoard::topNode;
         currentMove->moveIndex = pocket;
         int pieces = GameBoard::gameBoard[pocket];
         GameBoard::gameBoard[pocket] = 0;
+        currentMove->numPiecesMoved = pieces;
         int ending = (GameBoard::boardSize+(pocket-pieces)%(GameBoard::boardSize))%(GameBoard::boardSize);
         //Adding pieces in the circle
         for(int i=1;i<=pieces;i++)
@@ -212,7 +213,7 @@ void GameBoard::undoMove()
 
 void GameBoard::printMoves(Node * currentNode)
 {
-    if(currentNode->prevNode != nullptr)
+    if(!(currentNode->prevNode))
     {
         GameBoard::printMoves(currentNode->prevNode);
     }
