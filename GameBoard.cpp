@@ -59,7 +59,7 @@ int GameBoard::getCurrentScore()
 
 bool GameBoard::spotPlayable(int pocket)
 {
-    if((GameBoard::turnTracker && pocket > 0 && pocket < GameBoard::player2Bank) || (!(GameBoard::turnTracker) && pocket > (GameBoard::player2Bank) && pocket < (GameBoard::boardSize)))
+    if(((GameBoard::turnTracker && pocket > 0 && pocket < GameBoard::player2Bank) || (!(GameBoard::turnTracker) && pocket > (GameBoard::player2Bank) && pocket < (GameBoard::boardSize))) && GameBoard::gameBoard[pocket] > 0)
     {
         return true;
     }
@@ -76,8 +76,8 @@ bool GameBoard::handleEndgame()
     {
         holderGameBoard[i] = gameBoard[i];
     }
-    int side1;
-    int side2;
+    int side1 = 0;
+    int side2 = 0;
     //checks if sides are empty
     for(int i = 1; i<GameBoard::player2Bank; i++)
     {
@@ -122,21 +122,21 @@ void GameBoard::makeMove(int pocket)
         currentMove->moveIndex = pocket;
         int pieces = GameBoard::gameBoard[pocket];
         GameBoard::gameBoard[pocket] = 0;
-        int ending = (pocket-pieces)%(GameBoard::boardSize);
+        int ending = (GameBoard::boardSize+(pocket-pieces)%(GameBoard::boardSize))%(GameBoard::boardSize);
         //Adding pieces in the circle
         for(int i=1;i<=pieces;i++)
         {
-            int changedIndex = (pocket-i)%(GameBoard::boardSize);
+            int changedIndex = (GameBoard::boardSize+(pocket-i)%(GameBoard::boardSize))%(GameBoard::boardSize);
             if((changedIndex == 0 && !GameBoard::turnTracker) || (changedIndex == (GameBoard::player2Bank) && GameBoard::turnTracker))
             {
-                ending = (ending-1)%(GameBoard::boardSize);
+                ending = (GameBoard::boardSize+(ending-1)%(GameBoard::boardSize))%(GameBoard::boardSize);
                 GameBoard::gameBoard[ending]++;
             }
             else
             {
-                if(pocket-i<0){
-                  changedIndex=2*numPockets+2+pocket-i;
-                }
+                /*if(pocket-i<0){
+                  changedIndex=GameBoard::boardSize+pocket-i;
+                }*/
                 GameBoard::gameBoard[changedIndex]++;
             }
         }
@@ -208,7 +208,6 @@ void GameBoard::undoMove()
     GameBoard::gameBoard[topNode->moveIndex] += topNode -> numPiecesMoved;
     Node * copy = topNode;
     topNode = topNode->prevNode;
-    delete copy;
 }
 
 void GameBoard::printMoves(Node * currentNode)
